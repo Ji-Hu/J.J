@@ -1,0 +1,7 @@
+﻿  main.cpp
+d:\myo-sdk\include\myo\cxx\detail\throwonerror.hpp(39): warning C4297: 'myo::ThrowOnError::~ThrowOnError': 함수는 예외를 Throw하지 않도록 지정되었으나 예외를 Throw했습니다.
+  d:\myo-sdk\include\myo\cxx\detail\throwonerror.hpp(39): note: 소멸자 또는 비할당자는 가능하면 암시적으로 throw되지 않는 예외 사양을 사용합니다.
+d:\myo-sdk\include\myo\cxx\detail\throwonerror.hpp(45): warning C4297: 'myo::ThrowOnError::~ThrowOnError': 함수는 예외를 Throw하지 않도록 지정되었으나 예외를 Throw했습니다.
+  d:\myo-sdk\include\myo\cxx\detail\throwonerror.hpp(45): note: 소멸자 또는 비할당자는 가능하면 암시적으로 throw되지 않는 예외 사양을 사용합니다.
+  MyMyoEMG.vcxproj -> d:\문서\visual studio 2017\Projects\MyMyoEMG\Debug\MyMyoEMG.exe
+  MyMyoEMG.vcxproj -> d:\문서\visual studio 2017\Projects\MyMyoEMG\Debug\MyMyoEMG.pdb (Partial PDB)
