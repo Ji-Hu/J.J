@@ -17,6 +17,9 @@ namespace VRStandardAssets.ShootingGallery
         [SerializeField] private int m_Score = 1;                       // This is the amount added to the users score when the target is hit.
         [SerializeField] private float m_TimeOutDuration = 2f;          // How long the target lasts before it disappears.
         [SerializeField] private float m_DestroyTimeOutDuration = 2f;   // When the target is hit, it shatters.  This is how long before the shattered pieces disappear.
+        [SerializeField] private float m_RespawnDuration = 3f;
+        [SerializeField] private int m_RespawnCount = 10;
+        [SerializeField] private GameObject m_RespawnPrefab;
         [SerializeField] private GameObject m_DestroyPrefab;            // The prefab for the shattered target.
         [SerializeField] private AudioClip m_DestroyClip;               // The audio clip to play when the target shatters.
         [SerializeField] private AudioClip m_SpawnClip;                 // The audio clip that plays when the target appears.
@@ -74,8 +77,11 @@ namespace VRStandardAssets.ShootingGallery
             m_Audio.clip = m_SpawnClip;
             m_Audio.Play();
 
+
+
+            StartCoroutine (RespawnTarget());
             // Make sure the target is facing the camera.
-            transform.LookAt(m_CameraTransform);
+            //transform.LookAt(m_CameraTransform);
 
             // Start the time out for when the target would naturally despawn.
             StartCoroutine (MissTarget());
@@ -83,8 +89,20 @@ namespace VRStandardAssets.ShootingGallery
             // Start the time out for when the game ends.
             // Note this will only come into effect if the game time remaining is less than the time out duration.
             StartCoroutine (GameOver (gameTimeRemaining));
+
         }
         
+        private IEnumerator RespawnTarget()
+        {
+            // Wait for the target to disappear naturally.
+            yield return new WaitForSeconds(m_TimeOutDuration);
+
+            if (m_RespawnCount > 0)
+            {
+                Instantiate(m_RespawnPrefab, transform.position, transform.rotation);
+            }
+            m_RespawnCount--;
+        }
 
         private IEnumerator MissTarget()
         {
@@ -136,7 +154,7 @@ namespace VRStandardAssets.ShootingGallery
                 OnRemove (this);
         }
 
-
+        //when collision
         private void HandleDown()
         {
             // If it's already ending, do nothing else.
@@ -166,6 +184,17 @@ namespace VRStandardAssets.ShootingGallery
             // Tell subscribers that this target is ready to be removed.
             if (OnRemove != null)
                 OnRemove(this);
+        }
+
+        //detect collision
+        void OnCollisionEnter(Collision col)
+        {
+            //collision with bullet
+            if (col.gameObject.tag == "bullet" && m_Collider.enabled)
+            {
+                HandleDown();
+                
+            }
         }
     }
 }
