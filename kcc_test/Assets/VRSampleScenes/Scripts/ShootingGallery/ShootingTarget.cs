@@ -11,15 +11,14 @@ namespace VRStandardAssets.ShootingGallery
     // how long before it despawns.
     public class ShootingTarget : MonoBehaviour
     {
-        public event Action<ShootingTarget> OnRemove;                   // This event is triggered when the target needs to be removed.
+        //public event Action<ShootingTarget> OnRemove;                   // This event is triggered when the target needs to be removed.
 
 
         [SerializeField] private int m_Score = 1;                       // This is the amount added to the users score when the target is hit.
-        [SerializeField] private float m_TimeOutDuration = 2f;          // How long the target lasts before it disappears.
-        [SerializeField] private float m_DestroyTimeOutDuration = 2f;   // When the target is hit, it shatters.  This is how long before the shattered pieces disappear.
+        //[SerializeField] private float m_TimeOutDuration = 2f;          // How long the target lasts before it disappears.
+        [SerializeField] private float m_DestroyTimeOutDuration = 3f;   // When the target is hit, it shatters.  This is how long before the shattered pieces disappear.
         [SerializeField] private float m_RespawnDuration = 3f;
         [SerializeField] private int m_RespawnCount = 10;
-        [SerializeField] private GameObject m_RespawnPrefab;
         [SerializeField] private GameObject m_DestroyPrefab;            // The prefab for the shattered target.
         [SerializeField] private AudioClip m_DestroyClip;               // The audio clip to play when the target shatters.
         [SerializeField] private AudioClip m_SpawnClip;                 // The audio clip that plays when the target appears.
@@ -27,7 +26,7 @@ namespace VRStandardAssets.ShootingGallery
 
 
         private Transform m_CameraTransform;                            // Used to make sure the target is facing the camera.
-        private VRInteractiveItem m_InteractiveItem;                    // Used to handle the user clicking whilst looking at the target.
+        //private VRInteractiveItem m_InteractiveItem;                    // Used to handle the user clicking whilst looking at the target.
         private AudioSource m_Audio;                                    // Used to play the various audio clips.
         private Renderer m_Renderer;                                    // Used to make the target disappear before it is removed.
         private Collider m_Collider;                                    // Used to make sure the target doesn't interupt other shots happening.
@@ -39,7 +38,7 @@ namespace VRStandardAssets.ShootingGallery
             // Setup the references.
             m_CameraTransform = Camera.main.transform;
             m_Audio = GetComponent<AudioSource> ();
-            m_InteractiveItem = GetComponent<VRInteractiveItem>();
+            //m_InteractiveItem = GetComponent<VRInteractiveItem>();
             m_Renderer = GetComponent<Renderer>();
             m_Collider = GetComponent<Collider>();
         }
@@ -47,25 +46,28 @@ namespace VRStandardAssets.ShootingGallery
 
         private void OnEnable ()
         {
-            m_InteractiveItem.OnDown += HandleDown;
+            //m_InteractiveItem.OnDown += HandleDown;
         }
 
 
         private void OnDisable ()
         {
-            m_InteractiveItem.OnDown -= HandleDown;
+            //m_InteractiveItem.OnDown -= HandleDown;
         }
 
 
         private void OnDestroy()
         {
             // Ensure the event is completely unsubscribed when the target is destroyed.
-            OnRemove = null;
+
         }
         
 
-        public void Restart (float gameTimeRemaining)
+        public IEnumerator Restart ()
         {
+
+            yield return new WaitForSeconds(m_RespawnDuration);
+
             // When the target is spawned turn the visual and physical aspects on.
             m_Renderer.enabled = true;
             m_Collider.enabled = true;
@@ -78,32 +80,19 @@ namespace VRStandardAssets.ShootingGallery
             m_Audio.Play();
 
 
-
-            StartCoroutine (RespawnTarget());
             // Make sure the target is facing the camera.
             //transform.LookAt(m_CameraTransform);
 
             // Start the time out for when the target would naturally despawn.
-            StartCoroutine (MissTarget());
+            //StartCoroutine (MissTarget());
 
             // Start the time out for when the game ends.
             // Note this will only come into effect if the game time remaining is less than the time out duration.
-            StartCoroutine (GameOver (gameTimeRemaining));
+            //StartCoroutine (GameOver (gameTimeRemaining));
 
         }
         
-        private IEnumerator RespawnTarget()
-        {
-            // Wait for the target to disappear naturally.
-            yield return new WaitForSeconds(m_TimeOutDuration);
-
-            if (m_RespawnCount > 0)
-            {
-                Instantiate(m_RespawnPrefab, transform.position, transform.rotation);
-            }
-            m_RespawnCount--;
-        }
-
+        /*
         private IEnumerator MissTarget()
         {
             // Wait for the target to disappear naturally.
@@ -127,9 +116,6 @@ namespace VRStandardAssets.ShootingGallery
             // Wait for the clip to finish.
             yield return new WaitForSeconds(m_MissedClip.length);
 
-            // Tell subscribers that this target is ready to be removed.
-            if (OnRemove != null)
-                OnRemove(this);
         }
 
 
@@ -149,11 +135,8 @@ namespace VRStandardAssets.ShootingGallery
             m_Renderer.enabled = false;
             m_Collider.enabled = false;
 
-            // Tell subscribers that this target is ready to be removed.
-            if (OnRemove != null)
-                OnRemove (this);
         }
-
+        */
         //when collision
         private void HandleDown()
         {
@@ -173,7 +156,7 @@ namespace VRStandardAssets.ShootingGallery
             m_Audio.Play();
 
             // Add to the player's score.
-            SessionData.AddScore(m_Score);
+            //SessionData.AddScore(m_Score);
 
             // Instantiate the shattered target prefab in place of this target.
             GameObject destroyedTarget = Instantiate(m_DestroyPrefab, transform.position, transform.rotation) as GameObject;
@@ -181,9 +164,6 @@ namespace VRStandardAssets.ShootingGallery
             // Destroy the shattered target after it's time out duration.
             Destroy(destroyedTarget, m_DestroyTimeOutDuration);
 
-            // Tell subscribers that this target is ready to be removed.
-            if (OnRemove != null)
-                OnRemove(this);
         }
 
         //detect collision
@@ -193,7 +173,12 @@ namespace VRStandardAssets.ShootingGallery
             if (col.gameObject.tag == "bullet" && m_Collider.enabled)
             {
                 HandleDown();
-                
+                StartCoroutine(Restart());
+            }
+            else if (col.gameObject.tag =="Fire" && m_Collider.enabled)
+            {
+                HandleDown();
+                StartCoroutine(Restart());
             }
         }
     }
