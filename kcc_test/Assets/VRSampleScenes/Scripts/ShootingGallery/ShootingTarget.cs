@@ -31,10 +31,26 @@ namespace VRStandardAssets.ShootingGallery
         private Renderer m_Renderer;                                    // Used to make the target disappear before it is removed.
         private Collider m_Collider;                                    // Used to make sure the target doesn't interupt other shots happening.
         private bool m_IsEnding;                                        // Whether the target is currently being removed by another source.
-        
+        private int tcount;
+
+        private void settCount(int init)
+        {
+            tcount = init;
+        }
+
+        private void addtcount()
+        {
+            tcount++;
+        }
+
+        public int gettcount()
+        {
+            return tcount;
+        }
         
         private void Awake()
         {
+            settCount(0);
             // Setup the references.
             m_CameraTransform = Camera.main.transform;
             m_Audio = GetComponent<AudioSource> ();
@@ -172,11 +188,13 @@ namespace VRStandardAssets.ShootingGallery
             //collision with bullet
             if (col.gameObject.tag == "bullet" && m_Collider.enabled)
             {
+                addtcount();
                 HandleDown();
                 StartCoroutine(Restart());
             }
             else if (col.gameObject.tag =="Fire" && m_Collider.enabled)
             {
+                addtcount();
                 HandleDown();
                 StartCoroutine(Restart());
             }

@@ -17,13 +17,13 @@ TagManager:
   - 
   - 
   - Ethan
-  - MazeWalls
-  - MazeTurret
-  - MazeTurretBullet
+  - Fire
+  - Bullet
+  - 
   - Bg
   - FPSWeapon
-  - 
-  - 
+  - BulletTarget
+  - FireTarget
   - 
   - 
   - 
