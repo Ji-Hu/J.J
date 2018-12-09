@@ -14,7 +14,6 @@ namespace VRStandardAssets.ShootingGallery
         //public event Action<ShootingTarget> OnRemove;                   // This event is triggered when the target needs to be removed.
 
 
-        [SerializeField] private int m_Score = 1;                       // This is the amount added to the users score when the target is hit.
         //[SerializeField] private float m_TimeOutDuration = 2f;          // How long the target lasts before it disappears.
         [SerializeField] private float m_DestroyTimeOutDuration = 3f;   // When the target is hit, it shatters.  This is how long before the shattered pieces disappear.
         [SerializeField] private float m_RespawnDuration = 3f;
@@ -23,7 +22,7 @@ namespace VRStandardAssets.ShootingGallery
         [SerializeField] private AudioClip m_DestroyClip;               // The audio clip to play when the target shatters.
         [SerializeField] private AudioClip m_SpawnClip;                 // The audio clip that plays when the target appears.
         [SerializeField] private AudioClip m_MissedClip;                // The audio clip that plays when the target disappears without being hit.
-
+        [SerializeField] private int m_score=1;
 
         private Transform m_CameraTransform;                            // Used to make sure the target is facing the camera.
         //private VRInteractiveItem m_InteractiveItem;                    // Used to handle the user clicking whilst looking at the target.
@@ -31,26 +30,9 @@ namespace VRStandardAssets.ShootingGallery
         private Renderer m_Renderer;                                    // Used to make the target disappear before it is removed.
         private Collider m_Collider;                                    // Used to make sure the target doesn't interupt other shots happening.
         private bool m_IsEnding;                                        // Whether the target is currently being removed by another source.
-        private int tcount;
-
-        private void settCount(int init)
-        {
-            tcount = init;
-        }
-
-        private void addtcount()
-        {
-            tcount++;
-        }
-
-        public int gettcount()
-        {
-            return tcount;
-        }
         
         private void Awake()
         {
-            settCount(0);
             // Setup the references.
             m_CameraTransform = Camera.main.transform;
             m_Audio = GetComponent<AudioSource> ();
@@ -188,13 +170,13 @@ namespace VRStandardAssets.ShootingGallery
             //collision with bullet
             if (col.gameObject.tag == "bullet" && m_Collider.enabled)
             {
-                addtcount();
+                ScoreManager.SMi.AddScore(m_score);
                 HandleDown();
                 StartCoroutine(Restart());
             }
             else if (col.gameObject.tag =="Fire" && m_Collider.enabled)
             {
-                addtcount();
+                ScoreManager.SMi.AddScore(m_score);
                 HandleDown();
                 StartCoroutine(Restart());
             }
